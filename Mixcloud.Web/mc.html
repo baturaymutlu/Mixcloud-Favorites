@@ -1,0 +1,65 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Mixcloud Favorites</title>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+</head>
+<body>
+    <table>
+        <tr>
+            <td>
+                Username :
+            </td>
+            <td>
+                <input type="text" id="txtUsername" value="baturaymutlu" />
+            </td>
+            <td>
+                <input type="submit" id="submit" value="Get Favorites" onclick="ListFavorites($('#txtUsername').val());return false;"></input>
+            </td>
+        </tr>
+    </table>
+    <div id="divFavorites">
+    </div>
+    <script type="text/javascript">
+        var ListFavorites = function (username)
+        {
+            var url = 'http://api.mixcloud.com/' + username + '/favorites/';
+            $.ajax({
+                url: url,
+                dataType: 'json',
+                success: function (data)
+                {
+                    var $divFavorites = $("#divFavorites");
+
+                    $divFavorites.empty();
+                    if (data.data.length > 0)
+                    {
+                        var html = '<ul>';
+                        $.each(data.data, function (i, item)
+                        {
+                            html += '<li><a href="' + item.url + '"> <img src="' + item.pictures.thumbnail + '"/>' + item.name + '<br></a></li>';
+                        });
+                        $divFavorites.append(html).show();
+                    }
+                    else
+                    {
+                        var msg = 'No favorite found.';
+                        $divFavorites.html(msg);
+                    }
+                },
+                error: function (data)
+                {
+                    eval("errorResponse = " + data.responseText);
+                    var $divFavorites = $("#divFavorites");
+                    if (errorResponse.error)
+                    {
+                        $divFavorites.html(errorResponse.error.message);
+                    }
+                }
+            });
+        };
+
+    </script>
+</body>
+</html>
